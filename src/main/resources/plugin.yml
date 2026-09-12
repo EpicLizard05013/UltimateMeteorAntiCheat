@@ -5,10 +5,10 @@ api-version: '1.21'
 author: MeteorSMP
 description: Hybrid Grim and Vulcan anticheat system built for 1.21.11 Paper.
 commands:
-  anticheat:
-    description: Main anticheat command.
-    aliases: [ac]
-    permission: meteorsmp.anticheat.admin
+  meteor:
+    description: Main anticheat and antidupe command hub.
+    aliases: [vulcan, mac, anticheat]
+    permission: antidupe.notify
   acwhitelist:
     description: Manage anticheat whitelists.
     permission: meteorsmp.anticheat.admin
