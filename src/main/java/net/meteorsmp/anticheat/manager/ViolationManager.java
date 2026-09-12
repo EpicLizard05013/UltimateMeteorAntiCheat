@@ -12,23 +12,35 @@ import java.util.UUID;
 public class ViolationManager {
 
     private final UltimateMeoterAnticheat plugin;
-    private final Map<UUID, Integer> violations = new ConcurrentHashMap<>();
+    private final Map<UUID, Double> violations = new ConcurrentHashMap<>();
     private final Set<UUID> frozenPlayers = new HashSet<>();
 
     public ViolationManager(UltimateMeoterAnticheat plugin) {
         this.plugin = plugin;
     }
 
-    public void addViolation(Player player, String check, int vl) {
+    // Resolves the flag(...) symbol error across Combat, Movement, and World checks
+    public void flag(Player player, String category, String checkName, double vl) {
         UUID uuid = player.getUniqueId();
-        int currentVl = violations.getOrDefault(uuid, 0) + vl;
+        double currentVl = violations.getOrDefault(uuid, 0.0) + vl;
         violations.put(uuid, currentVl);
 
-        plugin.getAcLogger().logViolation(player, check + " (VL: " + currentVl + ")");
+        int intVl = (int) Math.round(currentVl);
         
-        if (currentVl >= 20) {
-            plugin.getPunishmentManager().punish(player, "Excessive " + check + " violations.");
+        // Log to violations daily log file
+        plugin.getAcLogger().logViolation(player.getName(), category + ":" + checkName, intVl, "+" + vl + " VL");
+        
+        // Check ladder punishments from punishments.yml
+        plugin.getPunishmentManager().executePunishment(player.getName(), category.toLowerCase(), intVl);
+
+        // Fallback default kick threshold
+        if (currentVl >= 50.0) {
+            plugin.getPunishmentManager().punish(player, "Excessive " + category + " flags (" + checkName + ")");
         }
+    }
+
+    public void addViolation(Player player, String check, int vl) {
+        flag(player, "General", check, (double) vl);
     }
 
     public boolean toggleFreeze(UUID uuid) {
@@ -45,8 +57,8 @@ public class ViolationManager {
         return frozenPlayers.contains(uuid);
     }
 
-    public int getViolations(UUID uuid) {
-        return violations.getOrDefault(uuid, 0);
+    public double getViolations(UUID uuid) {
+        return violations.getOrDefault(uuid, 0.0);
     }
 
     public void clearViolations(UUID uuid) {
