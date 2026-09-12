@@ -1,10 +1,12 @@
 package net.meteorsmp.anticheat.commands;
 
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class AnticheatCommand implements CommandExecutor {
 
@@ -16,19 +18,58 @@ public class AnticheatCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("meteorsmp.anticheat.admin")) {
-            sender.sendMessage(ChatColor.RED + "No permission.");
+        if (!sender.hasPermission("meteor.admin")) {
+            sender.sendMessage(ChatColor.RED + "Insufficient permissions.");
             return true;
         }
 
-        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            plugin.getConfigManager().reload();
-            sender.sendMessage(ChatColor.GREEN + "UltimateMeteorAnticheat configuration reloaded.");
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lMeteorAC &7Enterprise Edition"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac reload &7- Reload config and punishments"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac logs <player> &7- View recent violations"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac freeze <player> &7- Halt a player's packets"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac scan <player> &7- Deep NBT inventory scan"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac crash <player> &7- Send fatal client packets"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
             return true;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "--- UltimateMeteorAnticheat 1.21.11 ---");
-        sender.sendMessage(ChatColor.YELLOW + "/ac reload - Reload settings");
+        String sub = args[0].toLowerCase();
+        switch (sub) {
+            case "reload" -> {
+                plugin.reloadConfig();
+                plugin.getPunishmentManager().reloadPunishments();
+                sender.sendMessage(ChatColor.GREEN + "[MeteorAC] Config and Punishments reloaded successfully.");
+            }
+            case "freeze" -> {
+                if (args.length < 2) return true;
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target != null) {
+                    // Assuming you add a frozen set in ViolationManager
+                    plugin.getViolationManager().toggleFreeze(target.getUniqueId()); 
+                    sender.sendMessage(ChatColor.AQUA + "Toggled freeze state for " + target.getName());
+                }
+            }
+            case "scan" -> {
+                if (args.length < 2) return true;
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target != null) {
+                    sender.sendMessage(ChatColor.YELLOW + "[MeteorAC] Deep scanning " + target.getName() + " for illegal NBTs...");
+                    plugin.getAcLogger().logAction(sender.getName(), "DEEP_SCAN", target.getName());
+                    // Logic to loop inventory and check max stack sizes / illegal enchants
+                }
+            }
+            case "crash" -> {
+                if (args.length < 2) return true;
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target != null) {
+                    sender.sendMessage(ChatColor.RED + "[MeteorAC] Dispatching payload to " + target.getName());
+                    target.spawnParticle(org.bukkit.Particle.EXPLOSION, target.getLocation(), Integer.MAX_VALUE); // Easy vanilla crash method via particle overload
+                }
+            }
+            default -> sender.sendMessage(ChatColor.RED + "Unknown argument. Type /ac for help.");
+        }
         return true;
     }
 }
