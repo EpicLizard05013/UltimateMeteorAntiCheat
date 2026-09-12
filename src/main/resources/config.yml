@@ -5,7 +5,9 @@ buffer:
   max-violations: 15.0
 
 mode: QUARANTINE
-protect-all-items: false
+
+# Maximum protection mode
+protect-all-items: true
 
 signed-identities:
   accept-and-migrate-legacy: true
@@ -15,62 +17,62 @@ signed-identities:
 two-stage-enforcement:
   enabled: true
   required-matches: 1
-  confirmation-delay-ticks: 1
-  candidate-expiry-seconds: 30
+  confirmation-delay-ticks: 0
+  candidate-expiry-seconds: 15
 
 persistent-global-ledger:
   enabled: true
-  startup-baseline-delay-ticks: 40
+  startup-baseline-delay-ticks: 20
   learning-period-minutes: 1440
   required-matching-scans: 2
 
-verification-delay-ticks: 2
-periodic-player-audit-seconds: 30
+verification-delay-ticks: 1
+periodic-player-audit-seconds: 15
 
 performance:
   lag-control:
     enabled: true
-    minimum-tps: 18.5
-    retry-delay-ticks: 40
+    minimum-tps: 18.0
+    retry-delay-ticks: 20
   periodic-player-audits:
-    players-per-tick: 4
-    maximum-milliseconds-per-tick: 2.5
+    players-per-tick: 8
+    maximum-milliseconds-per-tick: 3.5
   background-scans:
-    maximum-chunks-per-tick: 4
-    maximum-inventories-per-tick: 32
-    maximum-milliseconds-per-tick: 3.0
-    minimum-spacing-seconds: 10
+    maximum-chunks-per-tick: 8
+    maximum-inventories-per-tick: 64
+    maximum-milliseconds-per-tick: 5.0
+    minimum-spacing-seconds: 5
 
 transaction-handlers:
   crafting:
-    enabled: false
-    delay-ticks: 2
+    enabled: true
+    delay-ticks: 1
   bundles:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
     include-contained-items-in-accounting: true
     recursive-content-check: true
   anvil:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   grindstone:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   smithing:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   stonecutter:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   cartography:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   loom:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
   villager-trades:
-    enabled: false
-    delay-ticks: 2
+    enabled: true
+    delay-ticks: 1
   furnace:
     enabled: true
   blast-furnace:
@@ -83,12 +85,12 @@ transaction-handlers:
     enabled: true
   workstation-results:
     enabled: true
-    delay-ticks: 2
+    delay-ticks: 1
 
 compatibility:
   external-plugin-inventories:
     enabled: true
-    grace-delay-ticks: 4
+    grace-delay-ticks: 2
     trusted-plugins:
       - UltimateShop
       - EconomyShopGUI
@@ -101,12 +103,12 @@ tracked-unique-materials: []
 log-clean-transactions: false
 
 cross-inventory-scanning:
-  enabled: false
-  period-seconds: 60
+  enabled: true
+  period-seconds: 30
   scan-loaded-containers: true
 
 warnings:
-  console: false
+  console: true
   console-verbosity: low
   notify-admins: true
   notify-permission: antidupe.notify
@@ -120,7 +122,7 @@ language:
   use-client-locale: true
 
 recovery:
-  enabled: false
+  enabled: true
 
 investigation-context:
   enabled: true
@@ -130,15 +132,15 @@ investigation-context:
 
 chunk-audit:
   enabled: true
-  chunks-per-tick: 1
+  chunks-per-tick: 2
   maximum-blocks-per-tick: 4096
-  maximum-milliseconds-per-tick: 1.5
+  maximum-milliseconds-per-tick: 2.0
   load-unloaded-chunks: false
   maximum-detailed-findings: 512
 
 command-history:
   enabled: true
-  commands-per-incident: 10
+  commands-per-incident: 15
   maximum-tracked-players: 1000
   maximum-command-length: 256
   sensitive-command-labels:
@@ -174,34 +176,34 @@ discord:
 
 scanner:
   enabled: true
-  online-inventory-minutes: 5
-  ender-chest-minutes: 10
-  loaded-containers-minutes: 0
-  uuid-crosscheck-minutes: 10
-  ledger-audit-minutes: 30
+  online-inventory-minutes: 2
+  ender-chest-minutes: 5
+  loaded-containers-minutes: 5
+  uuid-crosscheck-minutes: 5
+  ledger-audit-minutes: 15
   players-per-batch: 10
-  automatic-chunk-scans: false
-  chunk-scan-delay-ticks: 10
-  chunk-scans-per-batch: 8
-  maximum-pending-chunk-scans: 512
+  automatic-chunk-scans: true
+  chunk-scan-delay-ticks: 5
+  chunk-scans-per-batch: 16
+  maximum-pending-chunk-scans: 1024
 
 cross-inventory-protection:
   stabilization:
     enabled: true
-    after-join-ticks: 40
-    after-chunk-change-ticks: 10
-    after-world-change-ticks: 30
-    after-teleport-ticks: 20
-    after-portal-ticks: 30
+    after-join-ticks: 20
+    after-chunk-change-ticks: 5
+    after-world-change-ticks: 15
+    after-teleport-ticks: 10
+    after-portal-ticks: 15
     high-speed:
       enabled: true
-      blocks-per-second-threshold: 30.0
-      stabilization-ticks: 10
+      blocks-per-second-threshold: 25.0
+      stabilization-ticks: 5
   confirmation:
     enabled: true
-    delay-ticks: 1
-    required-matches: 1
-    candidate-expiry-seconds: 15
+    delay-ticks: 2
+    required-matches: 2
+    candidate-expiry-seconds: 5
 
 metrics:
   first-run-notice: true
@@ -225,9 +227,9 @@ inventory-rollbacks:
   capture-before-inventory-events: true
   capture-on-confirmed-detection: true
   capture-before-network-transfer: true
-  snapshot-cooldown-seconds: 2
+  snapshot-cooldown-seconds: 1
   retention-days: 7
-  maximum-snapshots-per-player: 50
+  maximum-snapshots-per-player: 100
   allow-cross-player-restore: false
   require-player-online-for-restore: true
 
@@ -254,13 +256,13 @@ world-rules:
   scan-ender-chests-by-default: true
   worlds:
     world:
-      mode: inherit
+      mode: quarantine
       scan-ender-chest: true
     world_nether:
-      mode: inherit
+      mode: quarantine
       scan-ender-chest: true
     world_the_end:
-      mode: inherit
+      mode: quarantine
       scan-ender-chest: true
     creative:
       mode: quarantine
@@ -272,25 +274,25 @@ exploit-fingerprints:
   include-in-console: true
   include-in-daily-log: true
   include-in-discord: true
-  minimum-confidence-to-report: 30
+  minimum-confidence-to-report: 15
   database-file: exploit-fingerprints.yml
   signals:
-    window-seconds: 15
-    rapid-rejoin-milliseconds: 5000
-    rapid-chunk-transition-milliseconds: 400
-    gui-click-burst-milliseconds: 1200
-    drop-burst-milliseconds: 1500
+    window-seconds: 5
+    rapid-rejoin-milliseconds: 3000
+    rapid-chunk-transition-milliseconds: 200
+    gui-click-burst-milliseconds: 450
+    drop-burst-milliseconds: 500
 
 security:
   enabled: true
   enforce-on-startup: true
   enforce-on-join: true
   enforce-on-world-change: true
-  audit-period-seconds: 15
+  audit-period-seconds: 5
   delayed-join-rechecks-ticks:
     - 1
-    - 20
-    - 100
+    - 10
+    - 40
   notify-admins: true
   notify-permission: antidupe.notify
   op-protection:
@@ -300,8 +302,9 @@ security:
     block-player-op-commands: true
     recheck-after-server-commands: true
   creative-protection:
-    enabled: false
-    allowed-uuids: []
+    enabled: true
+    allowed-uuids:
+      - 'f9397b3e-f54d-4c4a-9910-071087dbbff1'
     fallback-gamemode: SURVIVAL
 
 advanced-transfer-protection:
@@ -318,6 +321,9 @@ advanced-transfer-protection:
       - vault
       - senditem
       - itemgift
+      - trade
+      - pay
+      - ah
     explicitly-trusted-command-plugins:
       - Skript
     explicitly-trusted-command-labels:
@@ -331,17 +337,19 @@ advanced-transfer-protection:
       - private vault
       - storage
       - player vault
+      - chest
+      - backpack
     plugins: []
     verify-open-close-conservation: true
     crosscheck-on-open: true
     state-save-delay-ticks: 1
-    closed-state-increase-action: audit
+    closed-state-increase-action: quarantine
   repeated-small-transfers:
     enabled: true
-    window-seconds: 15
-    maximum-single-delta: 8
+    window-seconds: 10
+    maximum-single-delta: 4
     event-threshold: 2
-    quantity-threshold: 4
+    quantity-threshold: 2
   identity-integrity:
     enabled: true
     force-unique-materials: []
