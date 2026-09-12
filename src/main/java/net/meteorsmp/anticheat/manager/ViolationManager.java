@@ -3,46 +3,54 @@ package net.meteorsmp.anticheat.manager;
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.ConcurrentHashMap;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ViolationManager {
 
     private final UltimateMeoterAnticheat plugin;
-    private final Map<UUID, Double> violationBuffers = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> violations = new ConcurrentHashMap<>();
+    private final Set<UUID> frozenPlayers = new HashSet<>();
 
     public ViolationManager(UltimateMeoterAnticheat plugin) {
         this.plugin = plugin;
-        
-        long period = 20L;
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::decayBuffers, period, period);
     }
 
-    public void flag(Player player, String category, String checkType, double bufferValue) {
-        if (plugin.getWhitelistManager().isWhitelisted(player.getUniqueId())) return;
-
+    public void addViolation(Player player, String check, int vl) {
         UUID uuid = player.getUniqueId();
-        double currentBuffer = violationBuffers.getOrDefault(uuid, 0.0) + bufferValue;
-        violationBuffers.put(uuid, currentBuffer);
+        int currentVl = violations.getOrDefault(uuid, 0) + vl;
+        violations.put(uuid, currentVl);
 
-        plugin.getAcLogger().logViolation(player, category + " -> " + checkType + " [Val: " + String.format("%.2f", currentBuffer) + "]");
-
-        double maxAllowed = plugin.getConfig().getDouble("buffer.max-violations", 15.0);
-        if (currentBuffer >= maxAllowed) {
-            plugin.getPunishmentManager().punish(player, category);
-            violationBuffers.put(uuid, 0.0);
+        plugin.getAcLogger().logViolation(player, check + " (VL: " + currentVl + ")");
+        
+        if (currentVl >= 20) {
+            plugin.getPunishmentManager().punish(player, "Excessive " + check + " violations.");
         }
     }
 
-    private void decayBuffers() {
-        double decayRate = plugin.getConfig().getDouble("buffer.decay-rate", 0.5);
-        violationBuffers.forEach((uuid, value) -> {
-            if (value <= decayRate) {
-                violationBuffers.remove(uuid);
-            } else {
-                violationBuffers.put(uuid, value - decayRate);
-            }
-        });
+    // Resolves toggleFreeze symbol error in AnticheatCommand
+    public boolean toggleFreeze(UUID uuid) {
+        if (frozenPlayers.contains(uuid)) {
+            frozenPlayers.remove(uuid);
+            return false;
+        } else {
+            frozenPlayers.add(uuid);
+            return true;
+        }
+    }
+
+    public boolean isFrozen(UUID uuid) {
+        return frozenPlayers.contains(uuid);
+    }
+
+    public int getViolations(UUID uuid) {
+        return violations.getOrDefault(uuid, 0);
+    }
+
+    public void clearViolations(UUID uuid) {
+        violations.remove(uuid);
     }
 }
