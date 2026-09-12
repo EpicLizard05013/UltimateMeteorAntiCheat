@@ -255,6 +255,9 @@ world-rules:
   default-mode: inherit
   scan-ender-chests-by-default: true
   worlds:
+    spawn:
+      mode: inherit
+      scan-ender-chest: true
     world:
       mode: quarantine
       scan-ender-chest: true
@@ -267,6 +270,15 @@ world-rules:
     creative:
       mode: quarantine
       scan-ender-chest: true
+
+world-bypasses:
+  reach:
+    - spawn
+  fly:
+    - spawn
+  nofall:
+    - spawn
+  # anti-dupe intentionally omitted so it stays active in spawn
 
 exploit-fingerprints:
   enabled: true
