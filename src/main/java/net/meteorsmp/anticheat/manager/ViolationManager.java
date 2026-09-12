@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 
 public class ViolationManager {
@@ -31,7 +31,6 @@ public class ViolationManager {
         }
     }
 
-    // Resolves toggleFreeze symbol error in AnticheatCommand
     public boolean toggleFreeze(UUID uuid) {
         if (frozenPlayers.contains(uuid)) {
             frozenPlayers.remove(uuid);
