@@ -1,14 +1,350 @@
 prefix: "&8[&cMeteorAC&8] "
 
 buffer:
-  decay-rate: 0.5        # Amount of violation buffer removed per second
-  max-violations: 15.0   # Strict threshold required to execute punishment
+  decay-rate: 0.5
+  max-violations: 15.0
 
-antidupe:
+mode: QUARANTINE
+protect-all-items: false
+
+signed-identities:
+  accept-and-migrate-legacy: true
+  key-file: identity.key
+  shared-secret: ''
+
+two-stage-enforcement:
   enabled: true
-  block-shulker-in-shulker: true
-  prevent-end-portal-dupe: true
-  max-cps-inventory-click: 15
+  required-matches: 1
+  confirmation-delay-ticks: 1
+  candidate-expiry-seconds: 30
+
+persistent-global-ledger:
+  enabled: true
+  startup-baseline-delay-ticks: 40
+  learning-period-minutes: 1440
+  required-matching-scans: 2
+
+verification-delay-ticks: 2
+periodic-player-audit-seconds: 30
+
+performance:
+  lag-control:
+    enabled: true
+    minimum-tps: 18.5
+    retry-delay-ticks: 40
+  periodic-player-audits:
+    players-per-tick: 4
+    maximum-milliseconds-per-tick: 2.5
+  background-scans:
+    maximum-chunks-per-tick: 4
+    maximum-inventories-per-tick: 32
+    maximum-milliseconds-per-tick: 3.0
+    minimum-spacing-seconds: 10
+
+transaction-handlers:
+  crafting:
+    enabled: false
+    delay-ticks: 2
+  bundles:
+    enabled: true
+    delay-ticks: 2
+    include-contained-items-in-accounting: true
+    recursive-content-check: true
+  anvil:
+    enabled: true
+    delay-ticks: 2
+  grindstone:
+    enabled: true
+    delay-ticks: 2
+  smithing:
+    enabled: true
+    delay-ticks: 2
+  stonecutter:
+    enabled: true
+    delay-ticks: 2
+  cartography:
+    enabled: true
+    delay-ticks: 2
+  loom:
+    enabled: true
+    delay-ticks: 2
+  villager-trades:
+    enabled: false
+    delay-ticks: 2
+  furnace:
+    enabled: true
+  blast-furnace:
+    enabled: true
+  smoker:
+    enabled: true
+  brewing:
+    enabled: true
+  crafter:
+    enabled: true
+  workstation-results:
+    enabled: true
+    delay-ticks: 2
+
+compatibility:
+  external-plugin-inventories:
+    enabled: true
+    grace-delay-ticks: 4
+    trusted-plugins:
+      - UltimateShop
+      - EconomyShopGUI
+      - CrazyCrates
+      - SmartSpawners
+      - Skript
+
+tracked-stackables: []
+tracked-unique-materials: []
+log-clean-transactions: false
+
+cross-inventory-scanning:
+  enabled: false
+  period-seconds: 60
+  scan-loaded-containers: true
+
+warnings:
+  console: false
+  console-verbosity: low
+  notify-admins: true
+  notify-permission: antidupe.notify
+  time-zone: system
+  daily-log:
+    enabled: true
+    file-prefix: anti-dupe-
+
+language:
+  default: en_US
+  use-client-locale: true
+
+recovery:
+  enabled: false
+
+investigation-context:
+  enabled: true
+  nearby-player-radius-blocks: 32.0
+  maximum-nearby-players: 20
+  include-game-mode: true
+
+chunk-audit:
+  enabled: true
+  chunks-per-tick: 1
+  maximum-blocks-per-tick: 4096
+  maximum-milliseconds-per-tick: 1.5
+  load-unloaded-chunks: false
+  maximum-detailed-findings: 512
+
+command-history:
+  enabled: true
+  commands-per-incident: 10
+  maximum-tracked-players: 1000
+  maximum-command-length: 256
+  sensitive-command-labels:
+    - login
+    - log
+    - l
+    - register
+    - reg
+    - changepassword
+    - changepass
+    - changepw
+    - password
+    - passwd
+    - pin
+    - 2fa
+    - twofactor
+    - auth
+    - authenticate
+    - otp
+    - token
+    - verify
+    - verification
+
+discord:
+  enabled: false
+  webhook-url: ''
+  username: 'Anti-Dupe'
+  avatar-url: ''
+  locale: en_US
+  embed-color: '#FFB000'
+  include-coordinates: true
+  role-mention: ''
+
+scanner:
+  enabled: true
+  online-inventory-minutes: 5
+  ender-chest-minutes: 10
+  loaded-containers-minutes: 0
+  uuid-crosscheck-minutes: 10
+  ledger-audit-minutes: 30
+  players-per-batch: 10
+  automatic-chunk-scans: false
+  chunk-scan-delay-ticks: 10
+  chunk-scans-per-batch: 8
+  maximum-pending-chunk-scans: 512
+
+cross-inventory-protection:
+  stabilization:
+    enabled: true
+    after-join-ticks: 40
+    after-chunk-change-ticks: 10
+    after-world-change-ticks: 30
+    after-teleport-ticks: 20
+    after-portal-ticks: 30
+    high-speed:
+      enabled: true
+      blocks-per-second-threshold: 30.0
+      stabilization-ticks: 10
+  confirmation:
+    enabled: true
+    delay-ticks: 1
+    required-matches: 1
+    candidate-expiry-seconds: 15
+
+metrics:
+  first-run-notice: true
+
+database:
+  type: sqlite
+  schema-migrations: true
+  fail-startup-on-error: true
+  sqlite:
+    file: anti-dupe.db
+  remote:
+    host: 127.0.0.1
+    port: 3306
+    database: antidupe
+    username: antidupe
+    password: change-me
+    parameters: useSSL=false&serverTimezone=UTC
+
+inventory-rollbacks:
+  enabled: true
+  capture-before-inventory-events: true
+  capture-on-confirmed-detection: true
+  capture-before-network-transfer: true
+  snapshot-cooldown-seconds: 2
+  retention-days: 7
+  maximum-snapshots-per-player: 50
+  allow-cross-player-restore: false
+  require-player-online-for-restore: true
+
+network:
+  enabled: false
+  proxy: NONE
+  server-id: survival-1
+  plugin-message-channel: antidupe:network
+  heartbeat-seconds: 30
+  stale-server-seconds: 120
+  transfer-lock-seconds: 20
+  player-lease-seconds: 45
+  join-verification-delay-ticks: 20
+  capture-transfer-snapshot: true
+  reject-join-while-locked: true
+  inventory-mismatch-action: KICK
+  shared-ledger: true
+  cross-server-uuid-checks: true
+  cross-server-stack-accounting: true
+
+world-rules:
+  enabled: true
+  default-mode: inherit
+  scan-ender-chests-by-default: true
+  worlds:
+    world:
+      mode: inherit
+      scan-ender-chest: true
+    world_nether:
+      mode: inherit
+      scan-ender-chest: true
+    world_the_end:
+      mode: inherit
+      scan-ender-chest: true
+    creative:
+      mode: quarantine
+      scan-ender-chest: true
+
+exploit-fingerprints:
+  enabled: true
+  record-matches: true
+  include-in-console: true
+  include-in-daily-log: true
+  include-in-discord: true
+  minimum-confidence-to-report: 30
+  database-file: exploit-fingerprints.yml
+  signals:
+    window-seconds: 15
+    rapid-rejoin-milliseconds: 5000
+    rapid-chunk-transition-milliseconds: 400
+    gui-click-burst-milliseconds: 1200
+    drop-burst-milliseconds: 1500
+
+security:
+  enabled: true
+  enforce-on-startup: true
+  enforce-on-join: true
+  enforce-on-world-change: true
+  audit-period-seconds: 15
+  delayed-join-rechecks-ticks:
+    - 1
+    - 20
+    - 100
+  notify-admins: true
+  notify-permission: antidupe.notify
+  op-protection:
+    enabled: true
+    allowed-uuids:
+      - 'f9397b3e-f54d-4c4a-9910-071087dbbff1'
+    block-player-op-commands: true
+    recheck-after-server-commands: true
+  creative-protection:
+    enabled: false
+    allowed-uuids: []
+    fallback-gamemode: SURVIVAL
+
+advanced-transfer-protection:
+  command-transfers:
+    enabled: true
+    grace-delay-ticks: 1
+    include-ender-chests: true
+    include-open-inventories: true
+    capture-rollbacks-for-online-players: true
+    monitor-all-plugin-commands: false
+    monitored-labels:
+      - gift
+      - buy
+      - vault
+      - senditem
+      - itemgift
+    explicitly-trusted-command-plugins:
+      - Skript
+    explicitly-trusted-command-labels:
+      - sell
+      - kit
+      - givephysicalkey
+  plugin-managed-storage:
+    enabled: true
+    title-patterns:
+      - vault
+      - private vault
+      - storage
+      - player vault
+    plugins: []
+    verify-open-close-conservation: true
+    crosscheck-on-open: true
+    state-save-delay-ticks: 1
+    closed-state-increase-action: audit
+  repeated-small-transfers:
+    enabled: true
+    window-seconds: 15
+    maximum-single-delta: 8
+    event-threshold: 2
+    quantity-threshold: 4
+  identity-integrity:
+    enabled: true
+    force-unique-materials: []
 
 checks:
   combat:
@@ -29,5 +365,5 @@ checks:
     fastbreak: true
 
 punishments:
-  action: "NOTIFY" # Options: KICK, BAN, NOTIFY
+  action: "NOTIFY"
   kick-message: "&c[MeteorAC] Suspicious network activity / packet anomaly detected."
