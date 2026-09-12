@@ -6,6 +6,7 @@ import net.meteorsmp.anticheat.checks.MovementChecks;
 import net.meteorsmp.anticheat.checks.WorldChecks;
 import net.meteorsmp.anticheat.commands.AnticheatCommand;
 import net.meteorsmp.anticheat.commands.WhitelistCommand;
+import net.meteorsmp.anticheat.listeners.PacketDesyncListener;
 import net.meteorsmp.anticheat.manager.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,6 +37,7 @@ public final class UltimateMeoterAnticheat extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MovementChecks(this), this);
         getServer().getPluginManager().registerEvents(new WorldChecks(this), this);
         getServer().getPluginManager().registerEvents(new AntiDupeListener(this), this);
+        getServer().getPluginManager().registerEvents(new PacketDesyncListener(), this);
 
         // Commands
         if (getCommand("anticheat") != null) {
