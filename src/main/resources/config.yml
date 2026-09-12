@@ -1,0 +1,33 @@
+prefix: "&8[&cMeteorAC&8] "
+
+buffer:
+  decay-rate: 0.5        # Amount of violation buffer removed per second
+  max-violations: 15.0   # Strict threshold required to execute punishment
+
+antidupe:
+  enabled: true
+  block-shulker-in-shulker: true
+  prevent-end-portal-dupe: true
+  max-cps-inventory-click: 15
+
+checks:
+  combat:
+    killaura: true
+    reach: true
+    max-reach: 3.01
+    autoclicker: true
+    velocity: true
+  movement:
+    fly: true
+    speed: true
+    noslow: true
+    nofall: true
+    jesus: true
+  world:
+    fastplace: true
+    scaffold: true
+    fastbreak: true
+
+punishments:
+  action: "NOTIFY" # Options: KICK, BAN, NOTIFY
+  kick-message: "&c[MeteorAC] Suspicious network activity / packet anomaly detected."
