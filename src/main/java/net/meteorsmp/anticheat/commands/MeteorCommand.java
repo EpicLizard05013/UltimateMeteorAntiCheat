@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class MeteorCommand implements CommandExecutor, TabCompleter {
@@ -60,7 +61,16 @@ public class MeteorCommand implements CommandExecutor, TabCompleter {
             case "brands" -> {
                 sender.sendMessage(color("&e--- Player Client Brands ---"));
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    String brand = p.getClientOption(org.bukkit.entity.Player.ClientOption.ALLOW_SERVER_LISTINGS) != null ? "Custom/Modded" : "Vanilla/Standard";
+                    String brand = "Vanilla/Unknown";
+                    try {
+                        Method getClientBrand = p.getClass().getMethod("getClientBrandName");
+                        Object result = getClientBrand.invoke(p);
+                        if (result != null) {
+                            brand = result.toString();
+                        }
+                    } catch (Exception ignored) {
+                        // Fallback if client brand method isn't exposed by the server software
+                    }
                     sender.sendMessage(color("&f" + p.getName() + ": &b" + brand));
                 }
             }
