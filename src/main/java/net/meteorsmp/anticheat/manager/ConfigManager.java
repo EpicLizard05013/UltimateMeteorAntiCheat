@@ -1,20 +1,28 @@
 package net.meteorsmp.anticheat.manager;
 
-import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ConfigManager {
 
-    private final UltimateMeoterAnticheat plugin;
+    private final JavaPlugin plugin;
 
-    public ConfigManager(UltimateMeoterAnticheat plugin) {
+    public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void reload() {
-        plugin.reloadConfig();
+    public boolean isEnabled(String path) {
+        return plugin.getConfig().getBoolean("checks." + path, true);
     }
 
-    public String getPrefix() {
-        return plugin.getConfig().getString("prefix", "&8[&cMeteorAC&8] ");
+    public boolean getBoolean(String path, boolean defaultValue) {
+        return plugin.getConfig().getBoolean(path, defaultValue);
+    }
+
+    public int getInt(String path, int defaultValue) {
+        return plugin.getConfig().getInt(path, defaultValue);
+    }
+
+    public double getDouble(String path, double defaultValue) {
+        return plugin.getConfig().getDouble(path, defaultValue);
     }
 }
