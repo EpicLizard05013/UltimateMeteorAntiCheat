@@ -1,8 +1,10 @@
 package net.meteorsmp.anticheat.manager;
 
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 
@@ -27,6 +29,14 @@ public class PunishmentManager {
 
     public void reloadPunishments() {
         punishmentsConfig = YamlConfiguration.loadConfiguration(punishmentsFile);
+    }
+
+    // Resolves punish symbol error in ViolationManager
+    public void punish(Player player, String reason) {
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&c[MeteorAC] " + reason));
+            plugin.getAcLogger().logPunishment(player.getName(), "KICK", reason);
+        });
     }
 
     public void executePunishment(String playerName, String category, int vl) {
