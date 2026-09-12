@@ -1,6 +1,8 @@
 package net.meteorsmp.anticheat.manager;
 
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -19,12 +21,22 @@ public class ACLogger {
         }
     }
 
+    // Direct overload to support Player object and simple message from ViolationManager
+    public void logViolation(Player player, String details) {
+        logViolation(player.getName(), "GENERAL", 1, details);
+    }
+
     public void logViolation(String playerName, String checkName, int vl, String details) {
         writeLog("violations", playerName + " failed " + checkName + " (VL: " + vl + ") | Details: " + details);
     }
 
     public void logPunishment(String playerName, String action, String reason) {
         writeLog("punishments", "ACTION: " + action + " | TARGET: " + playerName + " | REASON: " + reason);
+    }
+
+    // Resolves logAction symbol error in AnticheatCommand
+    public void logAction(String actor, String action, String target) {
+        writeLog("actions", "ADMIN: " + actor + " | ACTION: " + action + " | TARGET: " + target);
     }
 
     private void writeLog(String prefix, String message) {
