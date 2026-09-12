@@ -6,8 +6,9 @@ author: MeteorSMP
 description: Hybrid Grim and Vulcan anticheat system built for 1.21.11 Paper.
 commands:
   meteor:
-    description: Main anticheat and antidupe command hub.
-    aliases: [vulcan, mac, anticheat]
+    description: Main command for MeteorAC
+    permission: meteor.admin
+    aliases: [mac]
     permission: antidupe.notify
   acwhitelist:
     description: Manage anticheat whitelists.
