@@ -1,0 +1,23 @@
+# Enterprise Punishment Configuration
+# Commands execute automatically when a player reaches the specified Violation Level (VL)
+
+settings:
+  broadcast-bans: true
+  broadcast-message: "&8[&cMeteorAC&8] &c%player% was removed from the server for violating server rules."
+  violation-decay-per-minute: 1.0
+
+escalation-ladder:
+  combat:
+    10: "msg %player% &c[MeteorAC] Warning: Suspicious combat activity."
+    25: "kick %player% &c[MeteorAC] Irregular combat packets detected."
+    50: "ban %player% &c[MeteorAC] Unfair Advantage (Combat)"
+  movement:
+    15: "msg %player% &c[MeteorAC] Warning: Suspicious movement."
+    30: "kick %player% &c[MeteorAC] Movement anomaly detected."
+    60: "ban %player% &c[MeteorAC] Unfair Advantage (Movement)"
+  dupe:
+    1: "ban %player% &c[MeteorAC] Critical Security Violation (Duplication)"
+    
+blacklisted-nbt-tags:
+  - "BlockEntityTag"
+  - "CommandBlock"
