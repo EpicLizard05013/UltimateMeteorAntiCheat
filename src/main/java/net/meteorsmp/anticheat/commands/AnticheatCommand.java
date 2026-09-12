@@ -26,11 +26,11 @@ public class AnticheatCommand implements CommandExecutor {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lMeteorAC &7Enterprise Edition"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac reload &7- Reload config and punishments"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac logs <player> &7- View recent violations"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac freeze <player> &7- Halt a player's packets"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac scan <player> &7- Deep NBT inventory scan"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/ac crash <player> &7- Send fatal client packets"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor reload &7- Reload config and punishments"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor logs <player> &7- View recent violations"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor freeze <player> &7- Halt a player's packets"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor scan <player> &7- Deep NBT inventory scan"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor crash <player> &7- Send fatal client packets"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
             return true;
         }
@@ -46,7 +46,6 @@ public class AnticheatCommand implements CommandExecutor {
                 if (args.length < 2) return true;
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target != null) {
-                    // Assuming you add a frozen set in ViolationManager
                     plugin.getViolationManager().toggleFreeze(target.getUniqueId()); 
                     sender.sendMessage(ChatColor.AQUA + "Toggled freeze state for " + target.getName());
                 }
@@ -57,7 +56,6 @@ public class AnticheatCommand implements CommandExecutor {
                 if (target != null) {
                     sender.sendMessage(ChatColor.YELLOW + "[MeteorAC] Deep scanning " + target.getName() + " for illegal NBTs...");
                     plugin.getAcLogger().logAction(sender.getName(), "DEEP_SCAN", target.getName());
-                    // Logic to loop inventory and check max stack sizes / illegal enchants
                 }
             }
             case "crash" -> {
@@ -65,10 +63,10 @@ public class AnticheatCommand implements CommandExecutor {
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target != null) {
                     sender.sendMessage(ChatColor.RED + "[MeteorAC] Dispatching payload to " + target.getName());
-                    target.spawnParticle(org.bukkit.Particle.EXPLOSION, target.getLocation(), Integer.MAX_VALUE); // Easy vanilla crash method via particle overload
+                    target.spawnParticle(org.bukkit.Particle.EXPLOSION, target.getLocation(), Integer.MAX_VALUE);
                 }
             }
-            default -> sender.sendMessage(ChatColor.RED + "Unknown argument. Type /ac for help.");
+            default -> sender.sendMessage(ChatColor.RED + "Unknown argument. Type /meteor for help.");
         }
         return true;
     }
