@@ -92,6 +92,7 @@ public class ViolationManager {
     }
 
     public void addViolation(Player player, String check, int vl) {
+        if (!EnforcementState.isEnabled()) return 0;
         flag(player, "General", check, (double) vl);
     }
 
