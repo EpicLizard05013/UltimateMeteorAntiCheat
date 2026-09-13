@@ -142,3 +142,11 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     public int getVersionsBehind() { return versionsBehind; }
     public String getLatestVersion() { return latestVersion; }
 }
+
+// Register Movement & Combat Checks
+getServer().getPluginManager().registerEvents(new VelocityCheck(this), this);
+getServer().getPluginManager().registerEvents(new ReachCheck(this), this);
+
+// Register Dupe & Sanitizer Guards
+getServer().getPluginManager().registerEvents(new TridentDupeGuard(this), this);
+getServer().getPluginManager().registerEvents(new ItemSanitizerGuard(this), this);
