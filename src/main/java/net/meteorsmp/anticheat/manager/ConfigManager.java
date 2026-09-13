@@ -1,28 +1,55 @@
 package net.meteorsmp.anticheat.manager;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.List;
 
 public class ConfigManager {
 
-    private final JavaPlugin plugin;
+    private final UltimateMeoterAnticheat plugin;
 
-    public ConfigManager(JavaPlugin plugin) {
+    public ConfigManager(UltimateMeoterAnticheat plugin) {
         this.plugin = plugin;
+        reload();
     }
 
-    public boolean isEnabled(String path) {
-        return plugin.getConfig().getBoolean("checks." + path, true);
+    public void reload() {
+        plugin.saveDefaultConfig();
+        plugin.reloadConfig();
     }
 
-    public boolean getBoolean(String path, boolean defaultValue) {
-        return plugin.getConfig().getBoolean(path, defaultValue);
+    public FileConfiguration getConfig() {
+        return plugin.getConfig();
     }
 
-    public int getInt(String path, int defaultValue) {
-        return plugin.getConfig().getInt(path, defaultValue);
+    public String getPrefix() {
+        return getConfig().getString("prefix", "&8[&cMeteorAC&8] ").replace("&", "§");
     }
 
-    public double getDouble(String path, double defaultValue) {
-        return plugin.getConfig().getDouble(path, defaultValue);
+    public boolean isWorldBypassed(String checkCategory, String worldName) {
+        List<String> bypassedWorlds = getConfig().getStringList("world-bypasses." + checkCategory.toLowerCase());
+        if (bypassedWorlds.stream().anyMatch(w -> w.equalsIgnoreCase(worldName))) {
+            return true;
+        }
+        
+        String worldMode = getConfig().getString("world-rules.worlds." + worldName + ".mode", "inherit");
+        return worldMode.equalsIgnoreCase("disabled") || worldMode.equalsIgnoreCase("ignore");
+    }
+
+    public boolean isCheckEnabled(String category, String checkName) {
+        return getConfig().getBoolean("checks." + category + "." + checkName + ".enabled", true);
+    }
+
+    public boolean isDupeMitigationEnabled(String mitigationKey) {
+        return getConfig().getBoolean("antidupe-engine.specific-dupe-mitigations." + mitigationKey + ".enabled", true);
+    }
+
+    public boolean isTransactionHandlerEnabled(String handlerKey) {
+        return getConfig().getBoolean("transaction-handlers." + handlerKey + ".enabled", true);
+    }
+
+    public int getTransactionDelay(String handlerKey) {
+        return getConfig().getInt("transaction-handlers." + handlerKey + ".delay-ticks", 1);
     }
 }
