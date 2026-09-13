@@ -66,5 +66,8 @@ public class ConfigManager {
 
     public boolean isTransactionHandlerEnabled(String handlerKey) {
         return getConfig().getBoolean("transaction-handlers." + handlerKey + ".enabled", true);
+
+    Bukkit.getPluginManager().registerEvents(new FlyCheck(this, configManager, violationManager), this);
+        
     }
 }
