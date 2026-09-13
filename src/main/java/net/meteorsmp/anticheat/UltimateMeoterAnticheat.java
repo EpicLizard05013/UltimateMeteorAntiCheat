@@ -55,7 +55,9 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
 
         // Register Commands
         if (getCommand("meteor") != null) {
-            getCommand("meteor").setExecutor(new AnticheatCommand(this));
+            AnticheatCommand meteorCmd = new AnticheatCommand(this);
+            getCommand("meteor").setExecutor(meteorCmd);
+            getCommand("meteor").setTabCompleter(meteorCmd);
         }
 
         if (getConfig().getBoolean("updates.check-on-startup", true)) {
@@ -100,6 +102,7 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
                             versionsBehind = Math.max(1, behindCount);
                             getLogger().warning("[MeteorAC] You are " + versionsBehind + " update(s) behind!");
                             getLogger().warning("[MeteorAC] Installed: v" + currentVer + " | Latest: v" + latestVersion);
+                            getLogger().warning("[MeteorAC] Download latest: https://github.com/" + repo);
                         } else {
                             versionsBehind = 0;
                         }
@@ -114,9 +117,11 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     @EventHandler
     public void onAdminJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (versionsBehind > 0 && player.hasPermission(getConfig().getString("settings.permission-admin", "meteor.admin"))) {
+        if (versionsBehind > 0 && player.hasPermission(getConfig().getString("settings.permission-admin", "meteorac.admin"))) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    "&8[&cMeteorAC&8] &cYou are &e" + versionsBehind + " &cupdates behind! &7(Current: &ev" + getDescription().getVersion() + " &7| Latest: &ev" + latestVersion + "&7)"));
+                    "&8[&cMeteorAC&8] &cYou are &e" + versionsBehind + " &cupdate(s) behind! &7(Current: &ev" + getDescription().getVersion() + " &7| Latest: &ev" + latestVersion + "&7)"));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&8[&cMeteorAC&8] &7Download latest build: &bhttps://github.com/" + getConfig().getString("updates.repository", "EpicLizard05013/UltimateMeteorAntiCheat")));
         }
     }
 
