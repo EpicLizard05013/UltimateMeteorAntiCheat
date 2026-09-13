@@ -1,6 +1,7 @@
 package net.meteorsmp.anticheat.manager;
 
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import net.meteorsmp.anticheat.EnforcementState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -92,7 +93,7 @@ public class ViolationManager {
     }
 
     public void addViolation(Player player, String check, int vl) {
-        if (!EnforcementState.isEnabled()) return 0;
+        if (!EnforcementState.isEnabled()) return;
         flag(player, "General", check, (double) vl);
     }
 
