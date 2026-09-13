@@ -26,6 +26,7 @@ public class AnticheatCommand implements CommandExecutor {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lMeteorAC &7Enterprise Edition"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor gui &7- Open admin control panel GUI"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor reload &7- Reload config and punishments"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor alerts &7- Toggle verbose violation alerts"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/meteor logs <player> &7- View recent violations"));
@@ -38,6 +39,13 @@ public class AnticheatCommand implements CommandExecutor {
 
         String sub = args[0].toLowerCase();
         switch (sub) {
+            case "gui" -> {
+                if (sender instanceof Player player) {
+                    plugin.getAdminGUI().openGUI(player);
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Only players can open the GUI.");
+                }
+            }
             case "reload" -> {
                 plugin.reloadConfig();
                 plugin.getPunishmentManager().reloadPunishments();
