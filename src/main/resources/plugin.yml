@@ -1,15 +1,26 @@
 name: UltimateMeteorAnticheat
-version: 1.0.0
+version: 1.0.0-SNAPSHOT
 main: net.meteorsmp.anticheat.UltimateMeoterAnticheat
 api-version: '1.21'
-author: MeteorSMP
-description: Hybrid Grim and Vulcan anticheat system built for 1.21.11 Paper.
 commands:
   meteor:
-    description: Main command for MeteorAC
-    permission: meteor.admin
-    aliases: [mac]
-    permission: antidupe.notify
-  acwhitelist:
-    description: Manage anticheat whitelists.
-    permission: meteorsmp.anticheat.admin
+    description: Main administrative command for UltimateMeteorAntiCheat
+    aliases: [meteorac, mac]
+    permission: meteorac.admin
+    usage: /meteor <subcommand>
+permissions:
+  meteorac.admin:
+    description: Full access to all anticheat commands and management
+    default: op
+  meteorac.alerts:
+    description: Access to receive live detection alerts
+    default: op
+  meteorac.bypass.combat:
+    description: Bypass combat check enforcement
+    default: false
+  meteorac.bypass.movement:
+    description: Bypass movement check enforcement
+    default: false
+  meteorac.bypass.antidupe:
+    description: Bypass anti-dupe engine checks
+    default: false
