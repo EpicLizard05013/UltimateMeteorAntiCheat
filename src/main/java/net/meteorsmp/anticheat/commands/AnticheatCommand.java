@@ -6,9 +6,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class AnticheatCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class AnticheatCommand implements CommandExecutor, TabCompleter {
 
     private final UltimateMeoterAnticheat plugin;
 
@@ -111,5 +116,32 @@ public class AnticheatCommand implements CommandExecutor {
             default -> sender.sendMessage(ChatColor.RED + "Unknown argument. Type /meteor for help.");
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            List<String> completions = new ArrayList<>(Arrays.asList(
+                    "gui", "reload", "alerts", "logs", "freeze", "scan", "crash"
+            ));
+            String arg = args[0].toLowerCase();
+            completions.removeIf(s -> !s.startsWith(arg));
+            return completions;
+        }
+        
+        if (args.length == 2) {
+            String sub = args[0].toLowerCase();
+            if (sub.equals("logs") || sub.equals("freeze") || sub.equals("scan") || sub.equals("crash")) {
+                List<String> players = new ArrayList<>();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    players.add(player.getName());
+                }
+                String arg = args[1].toLowerCase();
+                players.removeIf(s -> !s.toLowerCase().startsWith(arg));
+                return players;
+            }
+        }
+        
+        return new ArrayList<>();
     }
 }
