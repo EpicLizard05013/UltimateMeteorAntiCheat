@@ -57,6 +57,14 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
         getServer().getPluginManager().registerEvents(new AutoClickerCheck(this), this);
         getServer().getPluginManager().registerEvents(new ContainerDupeGuard(this), this);
 
+        // Register Movement & Combat Checks
+        getServer().getPluginManager().registerEvents(new VelocityCheck(this), this);
+        getServer().getPluginManager().registerEvents(new ReachCheck(this), this);
+
+        // Register Dupe & Sanitizer Guards
+        getServer().getPluginManager().registerEvents(new TridentDupeGuard(this), this);
+        getServer().getPluginManager().registerEvents(new ItemSanitizerGuard(this), this);
+
         // Initialize Discord Webhook Manager
         DiscordWebhookManager webhookManager = new DiscordWebhookManager(this);
 
@@ -142,11 +150,3 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     public int getVersionsBehind() { return versionsBehind; }
     public String getLatestVersion() { return latestVersion; }
 }
-
-// Register Movement & Combat Checks
-getServer().getPluginManager().registerEvents(new VelocityCheck(this), this);
-getServer().getPluginManager().registerEvents(new ReachCheck(this), this);
-
-// Register Dupe & Sanitizer Guards
-getServer().getPluginManager().registerEvents(new TridentDupeGuard(this), this);
-getServer().getPluginManager().registerEvents(new ItemSanitizerGuard(this), this);
