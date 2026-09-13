@@ -1,38 +1,67 @@
+# ==============================================================================
+#                  METEORAC - ADVANCED ANTICHEAT & ANTIDUPE ENGINE
+# ==============================================================================
+# Configuration Version: 4.8.2-RELEASE
+# Directives: Extreme Security & Anti-Exploit Enforcement Protocol
+# ==============================================================================
+
 prefix: "&8[&cMeteorAC&8] "
 
+# Core System Enforcement Mode
+# Options: STRICT, QUARANTINE, SILENT_MONITOR, AGGRESSIVE_PURGE
+mode: QUARANTINE
+
+# Violation Buffer & Decay Dynamics
 buffer:
   decay-rate: 0.5
   max-violations: 15.0
+  decay-interval-seconds: 3
+  violation-weight-multiplier: 1.25
 
-mode: QUARANTINE
-
-# Maximum protection mode
+# Global Item Protection Directives
 protect-all-items: true
+nbt-sanitization:
+  enabled: true
+  strip-illegal-enchantments: true
+  strip-invalid-attributes: true
+  strip-oversized-nbt-bytes: 2097152 # 2MB Max Payload
+  strip-invalid-custom-data: true
 
+# Cryptographic Identity & Tracking Protocols
 signed-identities:
   accept-and-migrate-legacy: true
   key-file: identity.key
   shared-secret: ''
+  enforce-unique-uuids: true
+  crypto-hash-algorithm: SHA-256
+  key-rotation-period-days: 30
 
+# Two-Stage Enforcement Verification
 two-stage-enforcement:
   enabled: true
   required-matches: 1
   confirmation-delay-ticks: 0
   candidate-expiry-seconds: 15
+  auto-quarantine-on-mismatch: true
 
+# Global Persistent Anti-Dupe Ledger
 persistent-global-ledger:
   enabled: true
   startup-baseline-delay-ticks: 20
   learning-period-minutes: 1440
   required-matching-scans: 2
+  auto-vacuum-interval-hours: 24
+  sqlite-journal-mode: WAL
 
 verification-delay-ticks: 1
 periodic-player-audit-seconds: 15
 
+# System Performance & Hardware Resource Throttling
 performance:
   lag-control:
     enabled: true
     minimum-tps: 18.0
+    pause-scans-below-tps: 16.0
     retry-delay-ticks: 20
   periodic-player-audits:
     players-per-tick: 8
@@ -42,51 +71,87 @@ performance:
     maximum-inventories-per-tick: 64
     maximum-milliseconds-per-tick: 5.0
     minimum-spacing-seconds: 5
+  async-thread-pool:
+    core-pool-size: 4
+    maximum-pool-size: 8
+    keep-alive-seconds: 60
 
+# ==============================================================================
+#                      TRANSACTION & WORKSTATION HANDLERS
+# ==============================================================================
 transaction-handlers:
   crafting:
     enabled: true
     delay-ticks: 1
+    cancel-on-fast-click: true
+    max-crafts-per-second: 12
   bundles:
     enabled: true
     delay-ticks: 1
     include-contained-items-in-accounting: true
     recursive-content-check: true
+    max-nesting-depth: 3
   anvil:
     enabled: true
     delay-ticks: 1
+    validate-exp-cost: true
+    prevent-renaming-dupe-vectors: true
   grindstone:
     enabled: true
     delay-ticks: 1
+    audit-exp-disbursements: true
   smithing:
     enabled: true
     delay-ticks: 1
+    validate-template-consumption: true
   stonecutter:
     enabled: true
     delay-ticks: 1
   cartography:
     enabled: true
     delay-ticks: 1
+    lock-map-copying-bursts: true
   loom:
     enabled: true
     delay-ticks: 1
   villager-trades:
     enabled: true
     delay-ticks: 1
+    verify-stock-decrement: true
+    anti-curing-discount-exploit: true
   furnace:
     enabled: true
+    delay-ticks: 1
   blast-furnace:
     enabled: true
+    delay-ticks: 1
   smoker:
     enabled: true
+    delay-ticks: 1
   brewing:
     enabled: true
+    delay-ticks: 1
   crafter:
     enabled: true
+    delay-ticks: 1
+    redstone-clock-protection: true
   workstation-results:
     enabled: true
     delay-ticks: 1
+  hopper-transfer:
+    enabled: true
+    audit-frequency-ticks: 2
+    max-items-per-second: 8
+  dropper-dispenser:
+    enabled: true
+    validate-shoot-events: true
+  chiseled-bookshelf:
+    enabled: true
+    delay-ticks: 1
 
+# ==============================================================================
+#                       PLUGIN COMPATIBILITY HOOKS
+# ==============================================================================
 compatibility:
   external-plugin-inventories:
     enabled: true
@@ -97,16 +162,61 @@ compatibility:
       - CrazyCrates
       - SmartSpawners
       - Skript
+      - Vault
+      - QuickShop
+      - ChestShop
+      - AuctionHouse
+      - ShopGUIPlus
+      - PlayerVaults
+  ignore-cancelled-events: true
+  override-custom-item-flags: true
 
-tracked-stackables: []
-tracked-unique-materials: []
+# Items requiring strict UUID / NBT tracking across all worlds
+tracked-stackables:
+  - ENCHANTED_GOLDEN_APPLE
+  - NETHERITE_BLOCK
+  - NETHERITE_INGOT
+  - DIAMOND_BLOCK
+  - BEACON
+  - DRAGON_EGG
+  - ELYTRA
+  - SHULKER_BOX
+  - WHITE_SHULKER_BOX
+  - ORANGE_SHULKER_BOX
+  - MAGENTA_SHULKER_BOX
+  - LIGHT_BLUE_SHULKER_BOX
+  - YELLOW_SHULKER_BOX
+  - LIME_SHULKER_BOX
+  - PINK_SHULKER_BOX
+  - GRAY_SHULKER_BOX
+  - LIGHT_GRAY_SHULKER_BOX
+  - CYAN_SHULKER_BOX
+  - PURPLE_SHULKER_BOX
+  - BLUE_SHULKER_BOX
+  - BROWN_SHULKER_BOX
+  - GREEN_SHULKER_BOX
+  - RED_SHULKER_BOX
+  - BLACK_SHULKER_BOX
+
+tracked-unique-materials:
+  - DRAGON_EGG
+  - TRIAL_KEY
+  - OMNI_DIRECTIONAL_VAULT_KEY
+  - HEAVY_CORE
+
 log-clean-transactions: false
 
+# Background container & inventory audit scanning
 cross-inventory-scanning:
   enabled: true
   period-seconds: 30
   scan-loaded-containers: true
+  scan-offline-player-inventories: true
+  scan-ender-chests: true
+  scan-donkey-inventories: true
+  scan-dropped-item-entities: true
 
+# Administrative Warnings & Notifications
 warnings:
   console: true
   console-verbosity: low
@@ -116,6 +226,8 @@ warnings:
   daily-log:
     enabled: true
     file-prefix: anti-dupe-
+    auto-compress-old-logs: true
+    retain-logs-days: 30
 
 language:
   default: en_US
@@ -123,12 +235,16 @@ language:
 
 recovery:
   enabled: true
+  backup-corrupted-data: true
+  auto-restore-on-desync: true
 
 investigation-context:
   enabled: true
   nearby-player-radius-blocks: 32.0
   maximum-nearby-players: 20
   include-game-mode: true
+  include-ping: true
+  include-tps: true
 
 chunk-audit:
   enabled: true
@@ -137,6 +253,8 @@ chunk-audit:
   maximum-milliseconds-per-tick: 2.0
   load-unloaded-chunks: false
   maximum-detailed-findings: 512
+  flag-excessive-tile-entities: true
+  max-tile-entities-per-chunk: 96
 
 command-history:
   enabled: true
@@ -163,16 +281,20 @@ command-history:
     - token
     - verify
     - verification
+    - withdraw
+    - pay
 
 discord:
   enabled: false
   webhook-url: ''
-  username: 'Anti-Dupe'
+  username: 'MeteorAC Anti-Dupe'
   avatar-url: ''
   locale: en_US
   embed-color: '#FFB000'
   include-coordinates: true
   role-mention: ''
+  ping-on-high-vl: true
+  min-vl-to-discord: 10.0
 
 scanner:
   enabled: true
@@ -187,6 +309,7 @@ scanner:
   chunk-scans-per-batch: 16
   maximum-pending-chunk-scans: 1024
 
+# Cross-Inventory & Teleport Desync Protection
 cross-inventory-protection:
   stabilization:
     enabled: true
@@ -207,6 +330,7 @@ cross-inventory-protection:
 
 metrics:
   first-run-notice: true
+  bstats-enabled: true
 
 database:
   type: sqlite
@@ -220,7 +344,7 @@ database:
     database: antidupe
     username: antidupe
     password: change-me
-    parameters: useSSL=false&serverTimezone=UTC
+    parameters: useSSL=false&serverTimezone=UTC&maximumPoolSize=10
 
 inventory-rollbacks:
   enabled: true
@@ -278,8 +402,8 @@ world-bypasses:
     - spawn
   nofall:
     - spawn
-  # anti-dupe intentionally omitted so it stays active in spawn
 
+# Specific Exploit Heuristics Fingerprinting
 exploit-fingerprints:
   enabled: true
   record-matches: true
@@ -294,6 +418,8 @@ exploit-fingerprints:
     rapid-chunk-transition-milliseconds: 200
     gui-click-burst-milliseconds: 450
     drop-burst-milliseconds: 500
+    portal-container-open-ms: 150
+    disconnect-while-entity-interact-ms: 300
 
 security:
   enabled: true
@@ -336,12 +462,12 @@ advanced-transfer-protection:
       - trade
       - pay
       - ah
-    explicitly-trusted-command-plugins:
-      - Skript
-    explicitly-trusted-command-labels:
-      - sell
-      - kit
-      - givephysicalkey
+  explicitly-trusted-command-plugins:
+    - Skript
+  explicitly-trusted-command-labels:
+    - sell
+    - kit
+    - givephysicalkey
   plugin-managed-storage:
     enabled: true
     title-patterns:
@@ -366,24 +492,250 @@ advanced-transfer-protection:
     enabled: true
     force-unique-materials: []
 
+# ==============================================================================
+#                 COMPREHENSIVE ANTICHEAT CHECKS MATRIX
+# ==============================================================================
 checks:
   combat:
-    killaura: true
-    reach: true
-    max-reach: 3.01
-    autoclicker: true
-    velocity: true
-  movement:
-    fly: true
-    speed: true
-    noslow: true
-    nofall: true
-    jesus: true
-  world:
-    fastplace: true
-    scaffold: true
-    fastbreak: true
+    killaura:
+      enabled: true
+      max-cps: 15
+      check-angle: true
+      check-reach: true
+      check-heuristic-raycast: true
+      check-multi-target: true
+      check-lock-on: true
+      max-violations: 10
+    reach:
+      enabled: true
+      max-reach: 3.01
+      dynamic-ping-compensation: true
+      max-violations: 8
+    autoclicker:
+      enabled: true
+      max-cps: 18
+      consistency-check: true
+      check-statistical-variance: true
+      max-violations: 12
+    velocity:
+      enabled: true
+      horizontal-modifier: 100.0
+      vertical-modifier: 100.0
+      strict-ground-check: true
+      max-violations: 6
+    hitbox:
+      enabled: true
+      expansion-tolerance: 0.05
+    aimassist:
+      enabled: true
+      smoothing-detection: true
+      pitch-yaw-ratio-check: true
+    criticals:
+      enabled: true
+      fall-distance-check: true
+      ground-packet-check: true
+    fastbow:
+      enabled: true
+      min-draw-ticks: 3
+    autototem:
+      enabled: true
+      min-swap-delay-ms: 60
 
+  movement:
+    fly:
+      enabled: true
+      max-vertical-speed: 0.42
+      allow-glide-with-elytra: true
+      glide-friction-multiplier: 0.99
+      max-violations: 10
+    speed:
+      enabled: true
+      max-ground-speed: 0.287
+      max-air-speed: 0.36
+      ice-speed-multiplier: 2.5
+      soul-sand-multiplier: 1.0
+      max-violations: 10
+    noslow:
+      enabled: true
+      check-item-use: true
+      check-bow-draw: true
+      check-shield-block: true
+      check-soul-speed: true
+    nofall:
+      enabled: true
+      spoof-ground-check: true
+      fall-distance-reset-check: true
+    jesus:
+      enabled: true
+      allow-depth-strider: true
+      allow-dolphin-grace: true
+    spider:
+      enabled: true
+      max-climb-rate: 0.2
+    step:
+      enabled: true
+      max-step-height: 0.6
+    highjump:
+      enabled: true
+      max-jump-height: 1.25
+    vclip:
+      enabled: true
+      max-vertical-teleport: 1.5
+    hclip:
+      enabled: true
+      max-horizontal-teleport: 2.0
+    phase:
+      enabled: true
+      check-block-intersection: true
+      prevent-suffocation-bypass: true
+    elytrafly:
+      enabled: true
+      max-boost-speed: 2.8
+      check-packet-firework-burst: true
+    inventorymove:
+      enabled: true
+      cancel-movement-in-gui: true
+    timer:
+      enabled: true
+      max-packet-speed: 1.04
+      sample-period-ticks: 40
+
+  world:
+    fastplace:
+      enabled: true
+      min-delay-ms: 50
+    scaffold:
+      enabled: true
+      check-pitch-lock: true
+      check-rotations: true
+      check-sneak-edge: true
+    fastbreak:
+      enabled: true
+      break-speed-tolerance: 1.02
+      check-efficiency-enchant: true
+      check-haste-effect: true
+    autotool:
+      enabled: true
+      instant-swap-check: true
+    blockreach:
+      enabled: true
+      max-block-reach: 4.5
+    ghosthand:
+      enabled: true
+      check-raytrace-line-of-sight: true
+    wallclick:
+      enabled: true
+      prevent-interact-through-walls: true
+    nuker:
+      enabled: true
+      max-breaks-per-second: 6
+
+  inventory:
+    autoarmor:
+      enabled: true
+      min-equip-delay-ms: 100
+    cheststealer:
+      enabled: true
+      min-click-delay-ms: 70
+      check-cursor-teleport: true
+    autoloot:
+      enabled: true
+      min-loot-delay-ms: 80
+    fasteat:
+      enabled: true
+      min-consume-ticks: 28
+
+  packet:
+    badpackets:
+      enabled: true
+      check-invalid-pitch: true # Pitch outside [-90, 90]
+      check-invalid-yaw: true
+      check-slot-switch: true
+      check-steer-vehicle: true
+      check-held-item-slot: true
+    packetspam:
+      enabled: true
+      max-packets-per-second: 300
+    payloadfilter:
+      enabled: true
+      max-custom-payload-bytes: 32767
+      block-unknown-channels: true
+
+# ==============================================================================
+#                DETAILED ANTI-DUPE CHECKS & DETECTION ENGINE
+# ==============================================================================
+antidupe-engine:
+  item-fingerprinting:
+    enabled: true
+    generate-uuid-on-spawn: true
+    track-nbt-hash: true
+    detect-cloned-nbt-tags: true
+    illegal-stack-size:
+      action: CLEAR_AND_NOTIFY
+      max-overstack-ratio: 1.0
+    container-desync-protection:
+      check-on-chunk-unload: true
+      check-on-entity-death: true
+      check-on-player-quit: true
+
+  specific-dupe-mitigations:
+    donkey-chest-dupe:
+      enabled: true
+      prevent-inventory-open-during-despawn: true
+      prevent-mount-disconnect-dupe: true
+    portal-dupe:
+      enabled: true
+      close-inventory-on-portal-enter: true
+      cancel-drop-in-portal-transition: true
+    crafting-table-desync:
+      enabled: true
+      clear-crafting-matrix-on-disconnect: true
+    shulker-drop-dupe:
+      enabled: true
+      validate-break-owner: true
+      delay-hopper-pickup-ticks: 2
+    book-and-quill-dupe:
+      enabled: true
+      max-book-pages: 50
+      max-bytes-per-page: 256
+      strip-invalid-click-events: true
+    anvil-rename-dupe:
+      enabled: true
+      clear-repair-cost-overflow: true
+    end-portal-frame-dupe:
+      enabled: true
+      cancel-interact-on-dimension-change: true
+
+# ==============================================================================
+#                  PUNISHMENTS & AUTOMATED ACTION THRESHOLDS
+# ==============================================================================
 punishments:
-  action: "NOTIFY"
+  action: "QUARANTINE"
   kick-message: "&c[MeteorAC] Suspicious network activity / packet anomaly detected."
+  ban-message: "&c[MeteorAC] You have been permanently banned for exploiting or cheating."
+  quarantine-message: "&c[MeteorAC] Your inventory has been temporarily frozen for verification."
+  
+  violation-levels:
+    10:
+      action: "NOTIFY"
+      command: ""
+    20:
+      action: "CANCEL_EVENT"
+      command: "warn {player} &c[MeteorAC] Unusual movement/inventory activity detected."
+    50:
+      action: "QUARANTINE"
+      command: "antidupe freeze {player}"
+    100:
+      action: "KICK"
+      command: "kick {player} &c[MeteorAC] Security verification failure."
+    200:
+      action: "BAN"
+      command: "ban {player} 7d &c[MeteorAC] Confirmed exploit/cheat pattern."
+
+# Custom Bypasses per Permission Group
+permissions:
+  bypass-combat: "meteorac.bypass.combat"
+  bypass-movement: "meteorac.bypass.movement"
+  bypass-world: "meteorac.bypass.world"
+  bypass-antidupe: "meteorac.bypass.antidupe"
+  admin-commands: "meteorac.admin"
