@@ -30,21 +30,16 @@ public class ViolationManager {
 
         int intVl = (int) Math.round(currentVl);
         
-        // Save to in-memory logs for /meteor logs
         String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
         String logEntry = "&8[&e" + timeStamp + "&8] &f" + category + "&7/" + checkName + " &cVL: " + intVl + " &7(+" + vl + ")";
         violationLogs.computeIfAbsent(player.getName().toLowerCase(), k -> new CopyOnWriteArrayList<>()).add(logEntry);
 
-        // Broadcast alert to staff who have alerts toggled on
         broadcastAlert(player, category, checkName, intVl, vl);
 
-        // Log to violations daily log file
         plugin.getAcLogger().logViolation(player.getName(), category + ":" + checkName, intVl, "+" + vl + " VL");
         
-        // Check ladder punishments from punishments.yml
         plugin.getPunishmentManager().executePunishment(player.getName(), category.toLowerCase(), intVl);
 
-        // Fallback default kick threshold
         if (currentVl >= 50.0) {
             plugin.getPunishmentManager().punish(player, "Excessive " + category + " flags (" + checkName + ")");
         }
@@ -88,7 +83,6 @@ public class ViolationManager {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8&m----------------------------------------"));
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lMeteorAC Logs &7- &e" + targetName));
         
-        // Send last 10 recorded violations
         int start = Math.max(0, logs.size() - 10);
         for (int i = start; i < logs.size(); i++) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', logs.get(i)));
@@ -121,5 +115,10 @@ public class ViolationManager {
 
     public void clearViolations(UUID uuid) {
         violations.remove(uuid);
+    }
+
+    public void clearAllViolations() {
+        violations.clear();
+        violationLogs.clear();
     }
 }
