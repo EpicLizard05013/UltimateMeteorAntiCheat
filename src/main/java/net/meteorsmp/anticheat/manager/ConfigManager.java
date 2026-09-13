@@ -46,6 +46,10 @@ public class ConfigManager {
         return getConfig().getBoolean(path, true);
     }
 
+    public boolean isCheckEnabled(String category, String checkName) {
+        return getConfig().getBoolean("checks." + category + "." + checkName + ".enabled", true);
+    }
+
     public boolean isWorldBypassed(String checkCategory, String worldName) {
         List<String> bypassedWorlds = getConfig().getStringList("world-bypasses." + checkCategory.toLowerCase());
         if (bypassedWorlds.stream().anyMatch(w -> w.equalsIgnoreCase(worldName))) {
