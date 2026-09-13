@@ -706,6 +706,12 @@ antidupe-engine:
       enabled: true
       cancel-interact-on-dimension-change: true
 
+      movement:
+  fly:
+    enabled: true
+    grace-ticks: 10
+    max-jump-height: 1.35
+
 # ==============================================================================
 #                  PUNISHMENTS & AUTOMATED ACTION THRESHOLDS
 # ==============================================================================
