@@ -34,7 +34,7 @@ public class MovementChecks implements Listener {
 
                 if (yDiff > maxY && !player.isGliding()) {
                     event.setTo(event.getFrom());
-                    plugin.getViolationManager().addViolation(player, "Fly", 1.0);
+                    plugin.getViolationManager().addViolation(player, "Fly", 1);
                 }
             }
         }
@@ -47,7 +47,7 @@ public class MovementChecks implements Listener {
 
                 if (horizontalDistance > maxGroundSpeed * 2.5) { 
                     event.setTo(event.getFrom());
-                    plugin.getViolationManager().addViolation(player, "Speed", 1.0);
+                    plugin.getViolationManager().addViolation(player, "Speed", 1);
                 }
             }
         }
