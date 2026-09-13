@@ -135,3 +135,10 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     public int getVersionsBehind() { return versionsBehind; }
     public String getLatestVersion() { return latestVersion; }
 }
+
+// Register new checks & dupe listeners
+getServer().getPluginManager().registerEvents(new AutoClickerCheck(this), this);
+getServer().getPluginManager().registerEvents(new ContainerDupeGuard(this), this);
+
+// Initialize Discord Webhook Manager
+DiscordWebhookManager webhookManager = new DiscordWebhookManager(this);
