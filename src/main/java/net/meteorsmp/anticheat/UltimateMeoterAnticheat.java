@@ -1,11 +1,9 @@
 package net.meteorsmp.anticheat;
 
 import net.meteorsmp.anticheat.antidupe.AntiDupeListener;
-import net.meteorsmp.anticheat.checks.CombatChecks;
-import net.meteorsmp.anticheat.checks.MovementChecks;
-import net.meteorsmp.anticheat.checks.WorldChecks;
-import net.meteorsmp.anticheat.commands.AnticheatCommand;
-import net.meteorsmp.anticheat.commands.WhitelistCommand;
+import net.meteorsmp.anticheat.checks.*;
+import net.meteorsmp.anticheat.commands.*;
+import net.meteorsmp.anticheat.gui.AdminGUI;
 import net.meteorsmp.anticheat.listeners.PacketDesyncListener;
 import net.meteorsmp.anticheat.manager.*;
 import org.bukkit.Bukkit;
@@ -29,87 +27,86 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     private PunishmentManager punishmentManager;
     private ACLogger acLogger;
     private WhitelistManager whitelistManager;
+    private AdminGUI adminGUI;
 
-    private boolean updateAvailable = false;
+    private int versionsBehind = 0;
     private String latestVersion = "";
 
     @Override
     public void onEnable() {
         instance = this;
-
         saveDefaultConfig();
 
-        // Managers
         this.configManager = new ConfigManager(this);
         this.acLogger = new ACLogger(this);
         this.violationManager = new ViolationManager(this);
         this.punishmentManager = new PunishmentManager(this);
         this.whitelistManager = new WhitelistManager(this);
+        this.adminGUI = new AdminGUI(this);
 
-        // Check Listeners
+        // Register Listeners
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(adminGUI, this);
         getServer().getPluginManager().registerEvents(new CombatChecks(this), this);
         getServer().getPluginManager().registerEvents(new MovementChecks(this), this);
         getServer().getPluginManager().registerEvents(new WorldChecks(this), this);
         getServer().getPluginManager().registerEvents(new AntiDupeListener(this), this);
         getServer().getPluginManager().registerEvents(new PacketDesyncListener(), this);
 
-        // Commands
+        // Register Commands
         if (getCommand("meteor") != null) {
             getCommand("meteor").setExecutor(new AnticheatCommand(this));
-        } else if (getCommand("anticheat") != null) {
-            getCommand("anticheat").setExecutor(new AnticheatCommand(this));
         }
 
-        if (getCommand("acwhitelist") != null) {
-            getCommand("acwhitelist").setExecutor(new WhitelistCommand(this));
+        if (getConfig().getBoolean("updates.check-on-startup", true)) {
+            checkForUpdates();
         }
 
-        // Run Update Check Asynchronously
-        checkForUpdates();
-
-        getLogger().info("UltimateMeteorAnticheat (Paper 1.21.11) initialized successfully.");
-    }
-
-    @Override
-    public void onDisable() {
-        getLogger().info("UltimateMeteorAnticheat disabled.");
+        getLogger().info("UltimateMeteorAnticheat initialized successfully.");
     }
 
     private void checkForUpdates() {
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
-                URL url = new URL("https://api.github.com/repos/EpicLizard05013/UltimateMeteorAntiCheat/releases/latest");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("User-Agent", "MeteorAC-UpdateChecker");
+                String repo = getConfig().getString("updates.repository", "EpicLizard05013/UltimateMeteorAntiCheat");
+                URL url = new URL("https://api.github.com/repos/" + repo + "/releases");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("User-Agent", "MeteorAC-UpdateChecker");
 
-                if (connection.getResponseCode() == 200) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder response = new StringBuilder();
+                if (conn.getResponseCode() == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder json = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
+                    while ((line = reader.readLine()) != null) json.append(line);
                     reader.close();
 
-                    String body = response.toString();
-                    int tagIndex = body.indexOf("\"tag_name\":\"");
-                    if (tagIndex != -1) {
-                        int start = tagIndex + 12;
-                        int end = body.indexOf("\"", start);
-                        latestVersion = body.substring(start, end).replace("v", "");
-                        String currentVersion = getDescription().getVersion().replace("v", "");
+                    String currentVer = getDescription().getVersion().replace("v", "").trim();
+                    String[] releases = json.toString().split("\"tag_name\":\"");
 
-                        if (!currentVersion.equalsIgnoreCase(latestVersion)) {
-                            updateAvailable = true;
-                            getLogger().warning("[MeteorAC] An update is available! Current: v" + currentVersion + " | Latest: v" + latestVersion);
-                            getLogger().warning("[MeteorAC] Download it at: https://github.com/EpicLizard05013/UltimateMeteorAntiCheat/releases");
+                    if (releases.length > 1) {
+                        latestVersion = releases[1].split("\"")[0].replace("v", "").trim();
+                        
+                        int behindCount = 0;
+                        for (int i = 1; i < releases.length; i++) {
+                            String tag = releases[i].split("\"")[0].replace("v", "").trim();
+                            if (tag.equalsIgnoreCase(currentVer)) {
+                                break;
+                            }
+                            behindCount++;
+                        }
+                        
+                        if (!currentVer.equalsIgnoreCase(latestVersion)) {
+                            versionsBehind = Math.max(1, behindCount);
+                            getLogger().warning("[MeteorAC] You are " + versionsBehind + " update(s) behind!");
+                            getLogger().warning("[MeteorAC] Installed: v" + currentVer + " | Latest: v" + latestVersion);
+                        } else {
+                            versionsBehind = 0;
                         }
                     }
                 }
             } catch (Exception e) {
-                getLogger().warning("[MeteorAC] Could not check GitHub for updates: " + e.getMessage());
+                getLogger().warning("[MeteorAC] Could not verify latest version from GitHub: " + e.getMessage());
             }
         });
     }
@@ -117,9 +114,9 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     @EventHandler
     public void onAdminJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (updateAvailable && player.hasPermission("meteor.admin")) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&cMeteorAC&8] &aA new update is available! &7(v" + latestVersion + ")"));
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&cMeteorAC&8] &7Download: &ehttps://github.com/EpicLizard05013/UltimateMeteorAntiCheat/releases"));
+        if (versionsBehind > 0 && player.hasPermission(getConfig().getString("settings.permission-admin", "meteor.admin"))) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&8[&cMeteorAC&8] &cYou are &e" + versionsBehind + " &cupdates behind! &7(Current: &ev" + getDescription().getVersion() + " &7| Latest: &ev" + latestVersion + "&7)"));
         }
     }
 
@@ -129,4 +126,7 @@ public final class UltimateMeoterAnticheat extends JavaPlugin implements Listene
     public PunishmentManager getPunishmentManager() { return punishmentManager; }
     public ACLogger getAcLogger() { return acLogger; }
     public WhitelistManager getWhitelistManager() { return whitelistManager; }
+    public AdminGUI getAdminGUI() { return adminGUI; }
+    public int getVersionsBehind() { return versionsBehind; }
+    public String getLatestVersion() { return latestVersion; }
 }
