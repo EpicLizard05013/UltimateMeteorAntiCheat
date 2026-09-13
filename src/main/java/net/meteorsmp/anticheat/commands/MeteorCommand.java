@@ -1,6 +1,7 @@
 package net.meteorsmp.anticheat.commands;
 
 import net.meteorsmp.anticheat.UltimateMeoterAnticheat;
+import net.meteorsmp.anticheat.EnforcementState;
 import net.meteorsmp.anticheat.gui.AdminGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,70 +43,61 @@ public class MeteorCommand implements CommandExecutor, TabCompleter {
 
         switch (sub) {
             case "disable" -> {
-    if (!sender.hasPermission("meteor.admin")) {
-        sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
-        return true;
-    }
-    EnforcementState.setEnabled(false);
-    Bukkit.broadcastMessage(ChatColor.RED + "[MeteorAC] Anticheat detection disabled by "
-            + sender.getName() + ". Antidupe protections remain active.");
-}
-case "enable" -> {
-    if (!sender.hasPermission("meteor.admin")) {
-        sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
-        return true;
-    }
-    EnforcementState.setEnabled(true);
-    Bukkit.broadcastMessage(ChatColor.GREEN + "[MeteorAC] Anticheat detection re-enabled by " + sender.getName() + ".");
-}
-case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is currently "
-        + (EnforcementState.isEnabled() ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
-            case "alerts":
+                if (!sender.hasPermission("meteor.admin")) {
+                    sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
+                    return true;
+                }
+                EnforcementState.setEnabled(false);
+                Bukkit.broadcastMessage(ChatColor.RED + "[MeteorAC] Anticheat detection disabled by "
+                        + sender.getName() + ". Antidupe protections remain active.");
+            }
+            case "enable" -> {
+                if (!sender.hasPermission("meteor.admin")) {
+                    sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
+                    return true;
+                }
+                EnforcementState.setEnabled(true);
+                Bukkit.broadcastMessage(ChatColor.GREEN + "[MeteorAC] Anticheat detection re-enabled by " + sender.getName() + ".");
+            }
+            case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is currently "
+                    + (EnforcementState.isEnabled() ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
+            case "alerts" -> {
                 if (ensurePlayer(sender)) {
                     Player p = (Player) sender;
                     toggleState(p, alertToggles, "Alerts");
                 }
-                break;
-
-            case "brands":
+            }
+            case "brands" -> {
                 if (ensurePlayer(sender)) {
                     Player p = (Player) sender;
                     toggleState(p, brandToggles, "Client Brand Notifications");
                 }
-                break;
-
-            case "verbose":
+            }
+            case "verbose" -> {
                 if (ensurePlayer(sender)) {
                     Player p = (Player) sender;
                     toggleState(p, verboseToggles, "Verbose Debug Output");
                 }
-                break;
-
-            case "reload":
+            }
+            case "reload" -> {
                 plugin.getConfigManager().reload();
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', 
                         plugin.getConfigManager().getPrefix() + "&aConfiguration and check parameters reloaded successfully."));
-                break;
-
-            case "perf":
-                sendPerformanceMetrics(sender);
-                break;
-
-            case "gui":
+            }
+            case "perf" -> sendPerformanceMetrics(sender);
+            case "gui" -> {
                 if (ensurePlayer(sender)) {
                     new AdminGUI(plugin).openGUI((Player) sender);
                 }
-                break;
-
-            case "profile":
+            }
+            case "profile" -> {
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Usage: /meteor profile <player>");
                     return true;
                 }
                 sendPlayerProfile(sender, args[1]);
-                break;
-
-            case "debug":
+            }
+            case "debug" -> {
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Usage: /meteor debug <player>");
                     return true;
@@ -114,9 +106,8 @@ case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is cu
                     Player p = (Player) sender;
                     toggleState(p, debugToggles, "Prediction Debugging for " + args[1]);
                 }
-                break;
-
-            case "spectate":
+            }
+            case "spectate" -> {
                 if (!ensurePlayer(sender)) return true;
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Usage: /meteor spectate <player>");
@@ -131,24 +122,19 @@ case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is cu
                 admin.setGameMode(GameMode.SPECTATOR);
                 admin.teleport(target);
                 admin.sendMessage(ChatColor.GREEN + "Now spectating " + target.getName() + ".");
-                break;
-
-            case "log":
+            }
+            case "log" -> {
                 int level = (args.length > 1) ? parseSmallInt(args[1], 100) : 100;
                 sender.sendMessage(ChatColor.YELLOW + "[MeteorAC] Outputting prediction logs (Depth: " + level + ")... Log dumped to /plugins/UltimateMeteorAntiCheat/logs/");
-                break;
-
-            case "history":
+            }
+            case "history" -> {
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Usage: /meteor history <player> [page]");
                     return true;
                 }
                 sendViolationHistory(sender, args[1], (args.length > 2) ? parseSmallInt(args[2], 1) : 1);
-                break;
-
-            default:
-                sendHelpMessage(sender);
-                break;
+            }
+            default -> sendHelpMessage(sender);
         }
 
         return true;
@@ -226,7 +212,7 @@ case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is cu
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> subcommands = Arrays.asList("alerts", "brands", "profile", "help", "debug", "perf", "reload", "spectate", "verbose", "log", "history", "gui");
+            List<String> subcommands = Arrays.asList("alerts", "brands", "profile", "help", "debug", "perf", "reload", "spectate", "verbose", "log", "history", "gui", "enable", "disable", "status");
             return subcommands.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 2 && Arrays.asList("profile", "debug", "spectate", "history").contains(args[0].toLowerCase())) {
