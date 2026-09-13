@@ -41,6 +41,25 @@ public class MeteorCommand implements CommandExecutor, TabCompleter {
         String sub = args[0].toLowerCase();
 
         switch (sub) {
+            case "disable" -> {
+    if (!sender.hasPermission("meteor.admin")) {
+        sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
+        return true;
+    }
+    EnforcementState.setEnabled(false);
+    Bukkit.broadcastMessage(ChatColor.RED + "[MeteorAC] Anticheat detection disabled by "
+            + sender.getName() + ". Antidupe protections remain active.");
+}
+case "enable" -> {
+    if (!sender.hasPermission("meteor.admin")) {
+        sender.sendMessage(ChatColor.RED + "You don't have permission for that.");
+        return true;
+    }
+    EnforcementState.setEnabled(true);
+    Bukkit.broadcastMessage(ChatColor.GREEN + "[MeteorAC] Anticheat detection re-enabled by " + sender.getName() + ".");
+}
+case "status" -> sender.sendMessage(ChatColor.GRAY + "[MeteorAC] Anticheat is currently "
+        + (EnforcementState.isEnabled() ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
             case "alerts":
                 if (ensurePlayer(sender)) {
                     Player p = (Player) sender;
