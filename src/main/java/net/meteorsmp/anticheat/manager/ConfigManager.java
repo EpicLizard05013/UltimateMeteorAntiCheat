@@ -27,6 +27,25 @@ public class ConfigManager {
         return getConfig().getString("prefix", "&8[&cMeteorAC&8] ").replace("&", "§");
     }
 
+    public boolean getBoolean(String path, boolean def) {
+        return getConfig().getBoolean(path, def);
+    }
+
+    public int getInt(String path, int def) {
+        return getConfig().getInt(path, def);
+    }
+
+    public double getDouble(String path, double def) {
+        return getConfig().getDouble(path, def);
+    }
+
+    public boolean isEnabled(String path) {
+        if (getConfig().contains(path + ".enabled")) {
+            return getConfig().getBoolean(path + ".enabled", true);
+        }
+        return getConfig().getBoolean(path, true);
+    }
+
     public boolean isWorldBypassed(String checkCategory, String worldName) {
         List<String> bypassedWorlds = getConfig().getStringList("world-bypasses." + checkCategory.toLowerCase());
         if (bypassedWorlds.stream().anyMatch(w -> w.equalsIgnoreCase(worldName))) {
@@ -37,19 +56,11 @@ public class ConfigManager {
         return worldMode.equalsIgnoreCase("disabled") || worldMode.equalsIgnoreCase("ignore");
     }
 
-    public boolean isCheckEnabled(String category, String checkName) {
-        return getConfig().getBoolean("checks." + category + "." + checkName + ".enabled", true);
-    }
-
     public boolean isDupeMitigationEnabled(String mitigationKey) {
         return getConfig().getBoolean("antidupe-engine.specific-dupe-mitigations." + mitigationKey + ".enabled", true);
     }
 
     public boolean isTransactionHandlerEnabled(String handlerKey) {
         return getConfig().getBoolean("transaction-handlers." + handlerKey + ".enabled", true);
-    }
-
-    public int getTransactionDelay(String handlerKey) {
-        return getConfig().getInt("transaction-handlers." + handlerKey + ".delay-ticks", 1);
     }
 }
